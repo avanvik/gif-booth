@@ -54,7 +54,7 @@ button.button--confirm {
 	position: absolute;
 	bottom: 20px;
 	top: 60px;
-	left: -220px;
+	left: -12vw;
 	overflow: scroll;
 	border-radius: 4px;
 	background: white;
@@ -63,7 +63,7 @@ button.button--confirm {
 	transform: rotate(-3deg);
 	z-index: 0;
 	opacity: 1;
-	transition: 1s;
+	transition: transform 1s 1s, opacity 2s 1s;
 }
 
 #image-roll.hidden {
@@ -72,9 +72,10 @@ button.button--confirm {
 }
 
 #image-roll img {
-	width: 200px;
-	height: auto;
+	width: auto;
+	height: 8vw;
 	margin-bottom: 10px;
+	animation: expose 3s;
 }
 
 .camera-actions {
@@ -160,4 +161,10 @@ button.button--confirm {
 	0% { opacity: 0; }
   5%   { opacity: 1; }
   100% { opacity: 0; }
+}
+
+@keyframes expose {
+	0% { opacity: 0; height: 0px; }
+	20% { opacity: 0; height: 8vw; }
+  100% { opacity: 1; }
 }

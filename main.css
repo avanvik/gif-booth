@@ -26,7 +26,7 @@ body {
 }
 
 button {
-	padding: 10px 20px;
+	padding: 10px 30px;
 	border-radius: 100px;
 	background: black;
 	color: white;
@@ -40,7 +40,7 @@ button.button--cancel {
 }
 
 button.button--confirm {
-	background: #584dd2;
+	background: #32c7da;
 }
 
 .app-frame {

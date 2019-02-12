@@ -1,13 +1,18 @@
 const takePhotoButton = document.querySelector('#btn-take-photo');
 const makeGIFButton = document.querySelector('#btn-make-gif')
 const discardButton = document.querySelector('#btn-discard-gif')
-const canvas = document.querySelector('canvas');
 const imageBuffer = document.querySelector('#image-buffer')
 const imageRoll = document.querySelector('#image-roll')
 const imgGIF = document.querySelector('#image-gif')
 const cameraCapture = document.querySelector('#camera-capture')
 const resultOverlay = document.querySelector('#result-overlay')
+const canvas = document.querySelector('#canvas-stream')
+const context = canvas.getContext('2d')
 let imageCapture
+var gif = new GIF({
+	workers: 2,
+	quality: 10
+});
 
 // Check if image capture is allowed on this device
 navigator.mediaDevices.getUserMedia({video: true})
@@ -15,8 +20,16 @@ navigator.mediaDevices.getUserMedia({video: true})
 		cameraCapture.srcObject = mediaStream;
 		
     const track = mediaStream.getVideoTracks()[0];
-    imageCapture = new ImageCapture(track);
-  })
+		imageCapture = new ImageCapture(track);
+
+		canvas.width = 640
+		canvas.height = 480
+		
+		setInterval(() => {
+			context.filter = 'grayscale(1) brightness(0.9) contrast(1.1)'
+			context.drawImage(cameraCapture,0,0)
+		}, 10);
+	})
 	
 function takePhoto() {
 	const flash = document.createElement('div')
@@ -26,28 +39,22 @@ function takePhoto() {
 	const image = document.createElement('img')
 	const thumbnail = document.createElement('img')
 
-	imageCapture.takePhoto()
-	.then(function(blob) {
-		image.src = URL.createObjectURL(blob);
-		thumbnail.src = URL.createObjectURL(blob);
+	image.height = canvas.height
+	image.width = canvas.width
 
-		imageBuffer.append(image)
-		imageRoll.prepend(thumbnail)
-		imageRoll.classList.remove('hidden')
-	})
+	var captureUrl = canvas.toDataURL()
+
+	thumbnail.src = captureUrl
+	image.src = captureUrl
+
+	imageBuffer.append(image)
+	imageRoll.prepend(thumbnail)
+	imageRoll.classList.remove('hidden')
 }
-	
-takePhotoButton.onclick = takePhoto
 
 function makeGif() {
-	var gif = new GIF({
-		workers: 2,
-		quality: 10
-	});
-
 	for (var i=0; i<imageBuffer.childElementCount; i++) {
 		gif.addFrame(imageBuffer.childNodes[i])
-		console.log(gif)
 	}
 
 	gif.on('finished', function(blob) {
@@ -58,6 +65,7 @@ function makeGif() {
 	gif.render()
 }
 
-makeGIFButton.onclick = makeGif
 
+takePhotoButton.onclick = takePhoto
+makeGIFButton.onclick = makeGif
 discardButton.onclick = ()=>{ location.reload() }
